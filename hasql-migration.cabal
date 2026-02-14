@@ -36,8 +36,8 @@ library
                             contravariant               >= 1.3,
                             crypton                     >= 0.32,
                             directory                   >= 1.2,
-                            hasql                       >= 1.4,
-                            hasql-transaction           >= 0.7,
+                            hasql                       >= 1.10,
+                            hasql-transaction           >= 1.2,
                             memory,
                             text                        >= 1.2,
                             time                        >= 1.4
@@ -51,8 +51,9 @@ test-suite hasql-migration-test
     type:                   exitcode-stdio-1.0
     build-depends:          base                        >= 4.7 && < 5,
                             bytestring                  >= 0.10,
-                            hasql                       >= 0.19,
+                            hasql                       >= 1.10,
                             hasql-migration,
-                            hasql-transaction           >= 0.5,
+                            hasql-transaction           >= 1.2,
                             hspec                       >= 2.2,
+                            text                        >= 1.2,
                             transformers                >= 0.3

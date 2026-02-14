@@ -14,8 +14,8 @@
 
 module Hasql.MigrationTest where
 
-import           Hasql.Session                        (run, SessionError)
-import           Hasql.Connection
+import           Hasql.Errors                         (SessionError)
+import           Hasql.Connection                     (Connection, use)
 import qualified Hasql.Transaction                    as Tx
 import qualified Hasql.Transaction.Sessions           as Tx
 import           Hasql.Migration
@@ -25,7 +25,7 @@ import           Test.Hspec                           (Spec, describe, it,
 
 runTx :: Connection -> Tx.Transaction a -> IO (Either SessionError a)
 runTx con act = do
-    run (Tx.transaction Tx.ReadCommitted Tx.Write act) con
+    use con (Tx.transaction Tx.ReadCommitted Tx.Write act)
 
 migrationSpec :: Connection -> Spec
 migrationSpec con = describe "Migrations" $ do

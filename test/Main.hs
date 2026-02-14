@@ -17,12 +17,13 @@ module Main
     ) where
 
 import Hasql.Connection
+import qualified Hasql.Connection.Settings as Settings
 import Hasql.MigrationTest
 import Test.Hspec (hspec)
 
 main :: IO ()
 main = do
-    conE <- acquire "dbname=test"
+    conE <- acquire (Settings.connectionString "dbname=test")
     case conE of
       Right con -> hspec (migrationSpec con)
       Left err -> putStrLn $ show err
