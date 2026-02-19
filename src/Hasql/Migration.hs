@@ -224,7 +224,7 @@ getMigrations =
 -- | A product type representing a single, executed 'SchemaMigration'.
 data SchemaMigration = SchemaMigration
   { -- | The name of the executed migration.
-    schemaMigrationName :: BS.ByteString,
+    schemaMigrationName :: T.Text,
     -- | The calculated MD5 checksum of the executed script.
     schemaMigrationChecksum :: Checksum,
     -- | A timestamp without timezone of the date of execution of the script.
@@ -239,6 +239,6 @@ instance Ord SchemaMigration where
 decodeSchemaMigration :: Decoders.Row SchemaMigration
 decodeSchemaMigration =
   SchemaMigration
-    <$> Decoders.column (Decoders.nonNullable Decoders.bytea)
+    <$> Decoders.column (Decoders.nonNullable Decoders.text)
     <*> Decoders.column (Decoders.nonNullable Decoders.text)
     <*> Decoders.column (Decoders.nonNullable Decoders.timestamp)
