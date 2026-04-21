@@ -1,7 +1,3 @@
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-
 -- |
 -- Module      : Hasql..Migration
 -- Copyright   : (c) 2016 Timo von Holtz <tvh@tvholtz.de>,

@@ -9,92 +9,92 @@
 -- Portability : GHC
 --
 -- A collection of hasql-migration specifications.
-
-{-# LANGUAGE OverloadedStrings #-}
-
 module Hasql.MigrationTest where
 
-import           Hasql.Errors                         (SessionError)
-import           Hasql.Connection                     (Connection, use)
-import qualified Hasql.Transaction                    as Tx
-import qualified Hasql.Transaction.Sessions           as Tx
-import           Hasql.Migration
-import           Hasql.Migration.Util                 (existsTable)
-import           Test.Hspec                           (Spec, describe, it,
-                                                       shouldBe, runIO)
+import Hasql.Connection (Connection, use)
+import Hasql.Errors (SessionError)
+import Hasql.Migration
+import Hasql.Migration.Util (existsTable)
+import Hasql.Transaction qualified as Tx
+import Hasql.Transaction.Sessions qualified as Tx
+import Test.Hspec
+  ( Spec,
+    describe,
+    it,
+    runIO,
+    shouldBe,
+  )
 
 runTx :: Connection -> Tx.Transaction a -> IO (Either SessionError a)
 runTx con act = do
-    use con (Tx.transaction Tx.ReadCommitted Tx.Write act)
+  use con (Tx.transaction Tx.ReadCommitted Tx.Write act)
 
 migrationSpec :: Connection -> Spec
 migrationSpec con = describe "Migrations" $ do
-    let migrationScript = MigrationScript "test.sql" q
-    let migrationScriptAltered = MigrationScript "test.sql" ""
-    mds <- runIO $ loadMigrationsFromDirectory "share/test/scripts"
-    let migrationDir = head mds 
-    migrationFile <- runIO $ loadMigrationFromFile "s.sql" "share/test/script.sql"
+  let migrationScript = MigrationScript "test.sql" q
+  let migrationScriptAltered = MigrationScript "test.sql" ""
+  mds <- runIO $ loadMigrationsFromDirectory "share/test/scripts"
+  let migrationDir = head mds
+  migrationFile <- runIO $ loadMigrationFromFile "s.sql" "share/test/script.sql"
 
-    it "initializes a database" $ do
-        r <- runTx con $ runMigration $ MigrationInitialization
-        r `shouldBe` Right Nothing
+  it "initializes a database" $ do
+    r <- runTx con $ runMigration $ MigrationInitialization
+    r `shouldBe` Right Nothing
 
-    it "creates the schema_migrations table" $ do
-        r <- runTx con $ existsTable "schema_migrations"
-        r `shouldBe` Right True
+  it "creates the schema_migrations table" $ do
+    r <- runTx con $ existsTable "schema_migrations"
+    r `shouldBe` Right True
 
-    it "executes a migration script" $ do
-        r <- runTx con $ runMigration $ migrationScript
-        r `shouldBe` Right Nothing
+  it "executes a migration script" $ do
+    r <- runTx con $ runMigration $ migrationScript
+    r `shouldBe` Right Nothing
 
-    it "creates the table from the executed script" $ do
-        r <- runTx con $ existsTable "t1"
-        r `shouldBe` Right True
+  it "creates the table from the executed script" $ do
+    r <- runTx con $ existsTable "t1"
+    r `shouldBe` Right True
 
-    it "skips execution of the same migration script" $ do
-        r <- runTx con $ runMigration $ migrationScript
-        r `shouldBe` Right Nothing
+  it "skips execution of the same migration script" $ do
+    r <- runTx con $ runMigration $ migrationScript
+    r `shouldBe` Right Nothing
 
-    it "reports an error on a different checksum for the same script" $ do
-        r <- runTx con $ runMigration $ migrationScriptAltered
-        r `shouldBe` Right (Just (ScriptChanged "test.sql"))
+  it "reports an error on a different checksum for the same script" $ do
+    r <- runTx con $ runMigration $ migrationScriptAltered
+    r `shouldBe` Right (Just (ScriptChanged "test.sql"))
 
-    it "executes migration scripts inside a folder" $ do
-        r <- runTx con $ runMigration $ migrationDir
-        r `shouldBe` Right Nothing
+  it "executes migration scripts inside a folder" $ do
+    r <- runTx con $ runMigration $ migrationDir
+    r `shouldBe` Right Nothing
 
-    it "creates the table from the executed scripts" $ do
-        r <- runTx con $ existsTable "t2"
-        r `shouldBe` Right True
+  it "creates the table from the executed scripts" $ do
+    r <- runTx con $ existsTable "t2"
+    r `shouldBe` Right True
 
-    it "executes a file based migration script" $ do
-        r <- runTx con $ runMigration $ migrationFile
-        r `shouldBe` Right Nothing
+  it "executes a file based migration script" $ do
+    r <- runTx con $ runMigration $ migrationFile
+    r `shouldBe` Right Nothing
 
-    it "creates the table from the executed scripts" $ do
-        r <- runTx con $ existsTable "t3"
-        r `shouldBe` Right True
+  it "creates the table from the executed scripts" $ do
+    r <- runTx con $ existsTable "t3"
+    r `shouldBe` Right True
 
-    it "validates initialization" $ do
-        r <- runTx con $ runMigration $ (MigrationValidation MigrationInitialization)
-        r `shouldBe` Right Nothing
+  it "validates initialization" $ do
+    r <- runTx con $ runMigration $ (MigrationValidation MigrationInitialization)
+    r `shouldBe` Right Nothing
 
-    it "validates an executed migration script" $ do
-        r <- runTx con $ runMigration $ (MigrationValidation migrationScript)
-        r `shouldBe` Right Nothing
+  it "validates an executed migration script" $ do
+    r <- runTx con $ runMigration $ (MigrationValidation migrationScript)
+    r `shouldBe` Right Nothing
 
-    it "validates all scripts inside a folder" $ do
-        r <- runTx con $ runMigration $ (MigrationValidation migrationDir)
-        r `shouldBe` Right Nothing
+  it "validates all scripts inside a folder" $ do
+    r <- runTx con $ runMigration $ (MigrationValidation migrationDir)
+    r `shouldBe` Right Nothing
 
-    it "validates an executed migration file" $ do
-        r <- runTx con $ runMigration $ (MigrationValidation migrationFile)
-        r `shouldBe` Right Nothing
+  it "validates an executed migration file" $ do
+    r <- runTx con $ runMigration $ (MigrationValidation migrationFile)
+    r `shouldBe` Right Nothing
 
-    it "gets a list of executed migrations" $ do
-        r <- runTx con getMigrations
-        fmap (map schemaMigrationName) r `shouldBe` Right ["test.sql", "1.sql", "s.sql"]
-
-    where
-        q = "create table t1 (c1 varchar);"
-
+  it "gets a list of executed migrations" $ do
+    r <- runTx con getMigrations
+    fmap (map schemaMigrationName) r `shouldBe` Right ["test.sql", "1.sql", "s.sql"]
+  where
+    q = "create table t1 (c1 varchar);"

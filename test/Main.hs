@@ -9,21 +9,19 @@
 -- Portability : GHC
 --
 -- The test entry-point for hasql-migration.
-
-{-# LANGUAGE OverloadedStrings #-}
-
 module Main
-    ( main
-    ) where
+  ( main,
+  )
+where
 
 import Hasql.Connection
-import qualified Hasql.Connection.Settings as Settings
+import Hasql.Connection.Settings qualified as Settings
 import Hasql.MigrationTest
 import Test.Hspec (hspec)
 
 main :: IO ()
 main = do
-    conE <- acquire (Settings.connectionString "dbname=test")
-    case conE of
-      Right con -> hspec (migrationSpec con)
-      Left err -> putStrLn $ show err
+  conE <- acquire (Settings.connectionString "dbname=test")
+  case conE of
+    Right con -> hspec (migrationSpec con)
+    Left err -> putStrLn $ show err
