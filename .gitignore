@@ -8,3 +8,9 @@ dist/
 cabal.sandbox.config
 stack.yaml
 .stack-work
+dist-newstyle/
+
+# Local dev environment
+.envrc
+.pre-commit-config.yaml
+db/
