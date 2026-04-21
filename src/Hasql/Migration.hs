@@ -35,16 +35,15 @@ where
 
 import Crypto.Hash (MD5 (..), hashWith)
 import Data.ByteArray.Encoding
-import qualified Data.ByteString as BS (ByteString, readFile)
+import Data.ByteString qualified as BS (ByteString, readFile)
 import Data.Functor.Contravariant
 import Data.List (isPrefixOf, sort)
-import Data.Semigroup ((<>))
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
+import Data.Text qualified as T
+import Data.Text.Encoding qualified as T
 import Data.Time (LocalTime)
 import Data.Traversable (forM)
-import qualified Hasql.Decoders as Decoders
-import qualified Hasql.Encoders as Encoders
+import Hasql.Decoders qualified as Decoders
+import Hasql.Encoders qualified as Encoders
 import Hasql.Migration.Util (existsTable)
 import Hasql.Statement (unpreparable)
 import Hasql.Transaction
